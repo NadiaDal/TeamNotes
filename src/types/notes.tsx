@@ -8,4 +8,4 @@ export interface NoteItem {
   createdAt: number;
 }
 
-export type NoteEntities = Record<UUID, NoteItem>;
+export type NoteFormItem = Pick<NoteItem, 'name' | 'description' | 'priority'>;

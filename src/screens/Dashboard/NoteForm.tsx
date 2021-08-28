@@ -1,23 +1,17 @@
 import React, {useState, useCallback} from 'react';
 import {Button, StyleSheet, TextInput, View} from 'react-native';
 import SizedBox from '../../components/SizedBox';
-import {NoteItem} from '../../types/notes';
-
-type NoteFormItem = Pick<NoteItem, 'name' | 'description' | 'priority'>;
+import {NoteFormItem} from '../../types/notes';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {addNote, updateNote} from '../../store/notesSlice';
 
 const NoteForm = () => {
-  // const initState = {
-  //   name: '',
-  //   description: '',
-  //   priority: 0,
-  // };
-  const initState: NoteItem | null = null;
+  const dispatch = useAppDispatch();
+  const initState = useAppSelector(state => state.modal.selectedEntity);
+
   const [note, updateNoteItem] = useState<NoteFormItem>({
-    // @ts-ignore
     name: initState?.name ?? '',
-    // @ts-ignore
     description: initState?.description ?? '',
-    // @ts-ignore
     priority: initState?.priority ?? 0,
   });
 
@@ -30,8 +24,13 @@ const NoteForm = () => {
   }, []);
 
   const save = useCallback(() => {
+    if (initState !== null) {
+      dispatch(updateNote({...initState, ...note}));
+    } else {
+      dispatch(addNote({...note, createdAt: Date.now()}));
+    }
     clean();
-  }, [clean]);
+  }, [clean, dispatch, initState, note]);
 
   return (
     <View style={styles.content}>

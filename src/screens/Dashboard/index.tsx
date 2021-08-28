@@ -7,8 +7,12 @@ import {Colors} from '../../theme/colors';
 import {backgroundDashboardImage} from '../../theme/images';
 import SizedBox from '../../components/SizedBox';
 import {NoteItem} from '../../types/notes';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {openModal} from '../../store/modalSlice';
 
 const Dashboard = () => {
+  const notes = useAppSelector(state => state.notes.items);
+  const dispatch = useAppDispatch();
   return (
     <ImageBackground
       source={backgroundDashboardImage}
@@ -18,9 +22,13 @@ const Dashboard = () => {
         <Text style={styles.text}>Awesome team</Text>
       </View>
       <FlatList<NoteItem>
-        data={[]}
+        data={notes}
         renderItem={({item}) => (
-          <NoteCard key={item.id} item={item} onOpen={() => {}} />
+          <NoteCard
+            key={item.id}
+            item={item}
+            onOpen={() => dispatch(openModal(item))}
+          />
         )}
       />
       <SizedBox height={16} />
@@ -29,7 +37,7 @@ const Dashboard = () => {
         size="small"
         color={Colors.primaryBlack}
         placement="right"
-        onPress={() => {}}
+        onPress={() => dispatch(openModal())}
       />
       <NoteModal />
     </ImageBackground>
