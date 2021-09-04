@@ -1,15 +1,19 @@
 import React from 'react';
-import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {Card} from 'react-native-elements';
-import SizedBox from './SizedBox';
+import IconButton from './IconButton';
 import {NoteItem} from '../types/notes';
+import {useAppDispatch} from '../store/hooks';
+import {noteDown, noteUp} from '../store/notesSlice';
 
 interface NoteCardProps {
   item: NoteItem;
+  index: number;
   onOpen: () => void;
 }
+const NoteCard: React.FC<NoteCardProps> = ({item, index, onOpen}) => {
+  const dispatch = useAppDispatch();
 
-const NoteCard: React.FC<NoteCardProps> = ({item, onOpen}) => {
   return (
     <TouchableOpacity onPress={onOpen}>
       <Card key={item.id} containerStyle={styles.container}>
@@ -18,7 +22,22 @@ const NoteCard: React.FC<NoteCardProps> = ({item, onOpen}) => {
         {item?.description && item.description.length > 0 ? (
           <Text style={styles.description}>{item.description}</Text>
         ) : null}
-        <SizedBox height={8} />
+        <View style={styles.buttonsContainer}>
+          <IconButton
+            key="buttonUp"
+            iconName="north"
+            onPress={() =>
+              dispatch(noteUp({itemIndex: index, itemId: item.id}))
+            }
+          />
+          <IconButton
+            key="buttonDown"
+            iconName="south"
+            onPress={() =>
+              dispatch(noteDown({itemIndex: index, itemId: item.id}))
+            }
+          />
+        </View>
       </Card>
     </TouchableOpacity>
   );
@@ -30,24 +49,17 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   title: {
+    paddingLeft: 8,
     fontSize: 16,
     fontWeight: '500',
   },
   description: {
     paddingLeft: 8,
   },
-  icon: {
-    alignSelf: 'flex-start',
-    paddingLeft: 8,
-  },
-  checkContainer: {
-    flex: 1,
+  buttonsContainer: {
+    display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  checkbox: {
-    paddingLeft: 0,
+    justifyContent: 'flex-end',
   },
 });
 

@@ -1,8 +1,13 @@
 import Automerge, {Table, FreezeObject} from 'automerge';
-import {NoteItem} from '../types/notes';
+import {NoteFormItem, NoteItem, UUID} from '../types/notes';
+
+interface AutomergeNoteItem extends Omit<NoteItem, 'priority' | 'id'> {
+  id?: UUID;
+  priority: Automerge.Counter;
+}
 
 interface Document {
-  items: Table<NoteItem>;
+  items: Table<AutomergeNoteItem>;
 }
 
 class AutomergeStore {
@@ -12,7 +17,12 @@ class AutomergeStore {
   }
 
   get items(): NoteItem[] {
-    return this.store.items.rows;
+    return this.store.items.rows
+      .map(item => ({
+        ...item,
+        priority: item.priority.value,
+      }))
+      .sort((a, b) => a.priority - b.priority);
   }
 
   persist() {
@@ -25,9 +35,14 @@ class AutomergeStore {
     }
   }
 
-  addItem(item: Omit<NoteItem, 'id'>) {
+  addItem(item: NoteFormItem) {
     this.store = Automerge.change<Document, Document>(this.store, doc => {
-      doc.items.add(item as NoteItem);
+      const note = {
+        ...item,
+        createdAt: Date.now(),
+        priority: new Automerge.Counter(this.store.items.count),
+      };
+      doc.items.add(note);
     });
   }
 
@@ -38,10 +53,19 @@ class AutomergeStore {
       note.description = item.description;
     });
   }
+
+  swapPriority(firstId: UUID, secondId: UUID) {
+    this.store = Automerge.change<Document, Document>(this.store, doc => {
+      let firstNote = doc.items.byId(firstId);
+      let secondNote = doc.items.byId(secondId);
+      firstNote.priority.increment();
+      secondNote.priority.decrement();
+    });
+  }
 }
 
 export default new AutomergeStore(
   Automerge.change<Document, Document>(Automerge.init(), doc => {
-    doc.items = new Automerge.Table<NoteItem>();
+    doc.items = new Automerge.Table<AutomergeNoteItem>();
   }),
 );

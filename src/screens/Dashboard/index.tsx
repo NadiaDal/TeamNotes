@@ -23,9 +23,10 @@ const Dashboard = () => {
       </View>
       <FlatList<NoteItem>
         data={notes}
-        renderItem={({item}) => (
+        renderItem={({item, index}) => (
           <NoteCard
             key={item.id}
+            index={index}
             item={item}
             onOpen={() => dispatch(openModal(item))}
           />

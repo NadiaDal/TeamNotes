@@ -12,14 +12,12 @@ const NoteForm = () => {
   const [note, updateNoteItem] = useState<NoteFormItem>({
     name: initState?.name ?? '',
     description: initState?.description ?? '',
-    priority: initState?.priority ?? 0,
   });
 
   const clean = useCallback(() => {
     updateNoteItem({
       name: '',
       description: '',
-      priority: 0,
     });
   }, []);
 
@@ -27,7 +25,7 @@ const NoteForm = () => {
     if (initState !== null) {
       dispatch(updateNote({...initState, ...note}));
     } else {
-      dispatch(addNote({...note, createdAt: Date.now()}));
+      dispatch(addNote(note));
     }
     clean();
   }, [clean, dispatch, initState, note]);
