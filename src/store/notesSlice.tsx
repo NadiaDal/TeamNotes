@@ -3,6 +3,7 @@ import {NoteFormItem, NoteItem} from '../types/notes';
 import AutomergeStore from '../automerge';
 import {getFromStorage} from '../helpers/asyncStore';
 import {UUID} from 'automerge';
+// TODO decouple ws from store
 import SocketConnection from '../websokets';
 
 interface InitState {
@@ -76,7 +77,6 @@ const notesSlice = createSlice({
       .addCase(loadStore.fulfilled, (state, action) => {
         state.isLoading = false;
         AutomergeStore.restore(action.payload);
-        // TODO think how to move socket open from reducer
         if (!SocketConnection.isOpen()) {
           SocketConnection.open(AutomergeStore.getAllChanges());
         }

@@ -1,8 +1,11 @@
 import Automerge, {FreezeObject} from 'automerge';
 import {NoteFormItem, NoteItem, UUID} from '../types/notes';
-import {Document} from '../types/automerge';
 import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid';
+
+export interface Document {
+  items: NoteItem[];
+}
 
 class AutomergeStore {
   private document: FreezeObject<Document>;
@@ -12,10 +15,6 @@ class AutomergeStore {
 
   get items(): NoteItem[] {
     return this.document.items ?? [];
-  }
-
-  get size(): number {
-    return (this.document.items ?? []).length;
   }
 
   persist(): string {
@@ -45,7 +44,6 @@ class AutomergeStore {
           ...item,
           id: uuidv4(),
           createdAt: Date.now(),
-          priority: this.size,
         };
         doc.items.push(note);
       },

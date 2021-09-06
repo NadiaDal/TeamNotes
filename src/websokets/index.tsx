@@ -3,11 +3,9 @@ import * as Automerge from 'automerge';
 import store from '../store';
 import {onChanges, onInit} from '../store/notesSlice';
 import AutomergeStore from '../automerge';
+import {API_URL} from '@env';
 
-// TODO move to env file
-const env = {
-  uri: 'ws://192.168.10.144:8999',
-};
+const SOCKET_REOPEN_TIMEOUT = 5000;
 
 class SocketConnection {
   private ws: WebSocket | null = null;
@@ -18,7 +16,7 @@ class SocketConnection {
   }
 
   open(localHistory: Automerge.Change[]) {
-    this.ws = new WebSocket(env.uri);
+    this.ws = new WebSocket(API_URL);
 
     this.ws.onopen = () => {
       this.isConnectionOpen = true;
@@ -46,8 +44,10 @@ class SocketConnection {
 
     this.ws.onclose = () => {
       this.isConnectionOpen = false;
-      // TODO move 1000 to const
-      setTimeout(() => this.open(AutomergeStore.getAllChanges()), 1000);
+      setTimeout(
+        () => this.open(AutomergeStore.getAllChanges()),
+        SOCKET_REOPEN_TIMEOUT,
+      );
     };
   }
 
