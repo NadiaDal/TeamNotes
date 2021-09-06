@@ -8,4 +8,7 @@ export interface NoteItem {
   createdAt: number;
 }
 
-export type NoteFormItem = Pick<NoteItem, 'name' | 'description'>;
+export type NoteFormItem = {
+  name: string;
+  description?: string;
+};

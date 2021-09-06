@@ -3,11 +3,10 @@ import {AppState, AppStateStatus, StyleSheet, View} from 'react-native';
 import NotesDashboard from './src/screens/Dashboard';
 import {Provider} from 'react-redux';
 import store from './src/store';
-import {saveToStorage} from './src/store/asyncStore';
+import {saveToStorage} from './src/helpers/asyncStore';
 import {loadStore} from './src/store/notesSlice';
-import AutomergeStore from './src/store/automergeStore';
+import AutomergeStore from './src/automerge';
 
-// TODO To be scaled localization should be implemented
 const App = () => {
   const appState = useRef(AppState.currentState);
 
