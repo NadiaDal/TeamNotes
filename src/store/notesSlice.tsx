@@ -8,11 +8,13 @@ import SocketConnection from '../websokets';
 
 interface InitState {
   isLoading: boolean;
+  isAutomergeInited: boolean;
   items: NoteItem[];
 }
 
 const initState: InitState = {
   isLoading: false,
+  isAutomergeInited: false,
   items: [],
 };
 
@@ -25,6 +27,7 @@ const notesSlice = createSlice({
     onInit: (state, action: PayloadAction<string>) => {
       AutomergeStore.merge(action.payload);
       state.items = AutomergeStore.items;
+      state.isAutomergeInited = true;
     },
     onChanges: (state, action: PayloadAction<string>) => {
       AutomergeStore.applyChanges(action.payload);
@@ -76,7 +79,11 @@ const notesSlice = createSlice({
       })
       .addCase(loadStore.fulfilled, (state, action) => {
         state.isLoading = false;
-        AutomergeStore.restore(action.payload);
+        const store = action.payload;
+        if (store) {
+          state.isAutomergeInited = true;
+          AutomergeStore.restore(store);
+        }
         if (!SocketConnection.isOpen()) {
           SocketConnection.open(AutomergeStore.getAllChanges());
         }

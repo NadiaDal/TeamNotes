@@ -21,10 +21,8 @@ class AutomergeStore {
     return Automerge.save(this.document);
   }
 
-  restore(store: string | null): void {
-    if (store) {
-      this.document = Automerge.load(store);
-    }
+  restore(store: string): void {
+    this.document = Automerge.load(store);
   }
 
   merge(serverHistory: string): void {
@@ -91,7 +89,6 @@ class AutomergeStore {
     return changes;
   }
   applyChanges(changes: string) {
-    // TODO fix order by priority
     this.document = Automerge.applyChanges(this.document, JSON.parse(changes));
   }
   getAllChanges() {
@@ -99,4 +96,4 @@ class AutomergeStore {
   }
 }
 
-export default new AutomergeStore(Automerge.from({items: []}));
+export default new AutomergeStore(Automerge.init());

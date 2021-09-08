@@ -57,7 +57,7 @@ class SocketConnection {
       team: 'awesome_team',
       payload: JSON.stringify(changes),
     };
-    if (this.ws) {
+    if (this.isConnectionOpen && this.ws) {
       this.ws.send(JSON.stringify(msg));
     }
   }

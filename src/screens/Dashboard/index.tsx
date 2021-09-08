@@ -12,6 +12,9 @@ import {openModal} from '../../store/modalSlice';
 
 const Dashboard = () => {
   const notes = useAppSelector(state => state.notes.items);
+  const isAutomergeInited = useAppSelector(
+    state => state.notes.isAutomergeInited,
+  );
   const dispatch = useAppDispatch();
   return (
     <ImageBackground
@@ -19,8 +22,11 @@ const Dashboard = () => {
       resizeMode="cover"
       style={styles.image}>
       <View style={styles.header}>
-        <Text style={styles.text}>Awesome team</Text>
+        <Text style={styles.title}>Awesome team</Text>
       </View>
+      {!isAutomergeInited ? (
+        <Text style={styles.text}>Please try again later</Text>
+      ) : null}
       <FlatList<NoteItem>
         data={notes}
         renderItem={({item, index}) => (
@@ -39,6 +45,7 @@ const Dashboard = () => {
         color={Colors.primaryBlack}
         placement="right"
         onPress={() => dispatch(openModal())}
+        disabled={!isAutomergeInited}
       />
       <NoteModal />
     </ImageBackground>
@@ -54,16 +61,23 @@ const styles = StyleSheet.create({
     opacity: 0.9,
     backgroundColor: Colors.primaryBlack,
   },
-  text: {
-    color: 'white',
+  title: {
+    color: Colors.white,
     fontSize: 22,
     lineHeight: 44,
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  text: {
+    color: Colors.white,
+    fontSize: 16,
+    lineHeight: 44,
+    alignSelf: 'center',
+  },
   image: {
     flex: 1,
     justifyContent: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,0.7)',
   },
 });
 
